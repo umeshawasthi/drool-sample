@@ -1,0 +1,63 @@
+package com.drool.test.balance;
+
+import  com.drool.test.Application;
+
+global  java.util.List myGlobal;
+
+dialect  "mvel"
+
+declare  Person
+
+name: String
+dateOfBirth: java.time.LocalDate
+address: String
+
+end
+
+rule "print account balance"
+//timer (cron:* 0/1 * * * ?)
+activation-group "operation"
+
+when
+
+ $acc : Account( )
+
+then
+ //insertLogical()
+ System.out.println( "********Print Total Balance is ******" + $acc.getBalance());
+ drools.setFocus("operation");
+
+ end
+
+rule "Decrease balance for AccountPeriod Debit"
+activation-group "operation"
+salience 12000
+date-effective "06-JUN-2017"
+when
+   ap : AccountPeriod( )
+   $acc : Account( )
+
+   $cf : CashFlow(type == CashFlowType.DEBIT , date >= ap.start && <= ap.endDate, accountNo == $acc.accountNo )
+then
+   $acc.setBalance($acc.getBalance() - $cf.getAmount());
+   System.out.println( "********Debit******" + $acc.getBalance());
+
+end
+
+rule "Increase balance for AccountPeriod Credits"
+timer ( int: 30s 5s )
+activation-group "operation"
+salience 3000
+when
+   ap : AccountPeriod( )
+   $acc : Account( )
+
+   $cf : CashFlow(type == CashFlowType.CREDIT , date >= ap.start && <= ap.endDate, accountNo == $acc.accountNo)
+then
+   $acc.setBalance($acc.getBalance() + $cf.getAmount());
+   System.out.println( "*******Credit*******" + $acc.getBalance());
+   drools.setFocus("print");
+
+end
+
+

@@ -1,0 +1,71 @@
+package com.drool.test.state.session;
+dialect  "mvel"
+
+rule "calculateBestPrice sure"
+
+when
+  $price : BestPrice()
+
+  then
+   System.out.println("hello");
+
+   end
+
+
+
+rule "when there fire"
+    when
+      Fire($room : room)
+      $sprinkler : Sprinkler(room == $room ,on == false)
+
+    then
+    modify($sprinkler){setOn(true)}
+    System.out.println(new StringBuilder().append("Turn on Sprinkler for room ").append($room.getName()).toString());
+end
+
+
+rule "When the fire is gone turn off the sprinkler"
+
+when
+
+  $room : Room()
+  $sprinkler : Sprinkler(room == $room && on == true)
+  not Fire(room == $room)
+
+  then
+
+  modify($sprinkler){setOn(false)}
+  System.out.println(new StringBuilder().append("Turn off Sprinkler for room ").append($room.getName()).toString());
+
+  end
+
+rule "Raise the alarm when we have one or more fires"
+
+when
+ exists Fire()
+
+ then
+   insert(new Alarm())
+   System.out.println(new StringBuilder().append("Raise the Alarm"));
+  end
+
+
+  rule "Cancel the alarm when all the fires have gone"
+
+  when
+  not Fire()
+  $alarm: Alarm()
+  then
+
+     delete($alarm);
+   end
+
+   rule "Status output when things are ok"
+
+   when
+   not Alarm()
+   not Sprinkler(on == true)
+
+   then
+    System.out.println("Everything is ok");
+    end

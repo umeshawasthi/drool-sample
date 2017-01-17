@@ -1,0 +1,16 @@
+package com.drool.test.order;
+dialect  "mvel"
+
+rule "Given 10% off on order"
+    when
+     $order : Order()
+     $ItemValue : OrderItem(value > 100) from $order.items
+    then
+      $newVal= $ItemValue.getValue() -($ItemValue.getValue() * 10/100);
+      $ItemValue.setValue($newVal);
+end
+
+
+
+
+

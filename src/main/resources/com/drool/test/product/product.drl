@@ -1,0 +1,20 @@
+package com.drool.test.product;
+dialect  "mvel"
+
+rule "Best Price"
+
+    when
+    $product : Product()
+    accumulate( ProductDiscount(product == $product , $discount : discount);
+       $avg : average($discount)
+    )
+
+    then
+     //to do
+end
+
+
+
+
+
+

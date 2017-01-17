@@ -1,0 +1,22 @@
+package com.drool.test;
+
+dialect  "mvel"
+
+rule "Is of valid age"
+    when
+    $a : Applicant( age < 18 )
+    //System.out.println( "1111" )
+    then
+       System.out.println( "Raise the alarm" );
+       //$a.setValid(false);
+end
+
+/*
+rule "this year application"
+
+    when $a : Application(dateApplied > "01-jan-2009")
+
+    then $a.setValid(false);
+
+    end
+*/
